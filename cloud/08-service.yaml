@@ -12,6 +12,10 @@ spec:
     name: cloudhub
   - port: 10002
     name: certandreadyz
+  - port: 10003
+    name: stream
+  - port: 10004
+    name: tunnel
   selector:
     k8s-app: kubeedge
     kubeedge: cloudcore

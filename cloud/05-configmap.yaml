@@ -24,7 +24,7 @@ data:
     modules:
       cloudHub:
         advertiseAddress:
-         - 1.1.1.1
+         - 10.101.4.43
         nodeLimit: 10
         tlsCAFile: /etc/kubeedge/ca/rootCA.crt
         tlsCertFile: /etc/kubeedge/certs/server.crt
