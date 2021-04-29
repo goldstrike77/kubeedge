@@ -11,10 +11,13 @@ data:
     apiVersion: cloudcore.config.kubeedge.io/v1alpha1
     kind: CloudCore
     kubeAPIConfig:
+      burst: 200
+      contentType: application/vnd.kubernetes.protobuf
       kubeConfig: ""
       master: ""
+      qps: 100
     leaderelection:
-      LeaderElect: true
+      LeaderElect: false
       LeaseDuration: 15s
       RenewDeadline: 10s
       ResourceLock: endpointsleases
@@ -24,11 +27,25 @@ data:
     modules:
       cloudHub:
         advertiseAddress:
-         - 10.101.4.43
-        nodeLimit: 10
-        tlsCAFile: /etc/kubeedge/ca/rootCA.crt
-        tlsCertFile: /etc/kubeedge/certs/server.crt
-        tlsPrivateKeyFile: /etc/kubeedge/certs/server.key
+        - 10.101.4.43
+        dnsNames:
+        - ""
+        edgeCertSigningDuration: 3650
+        enable: true
+        https:
+          address: 0.0.0.0
+          enable: true
+          port: 10002
+        keepaliveInterval: 30
+        nodeLimit: 10000
+        quic:
+          address: 0.0.0.0
+          maxIncomingStreams: 10000
+          port: 10001
+        tlsCAFile: /etc/kubeedge/certs/rootCA.crt
+        tlsCAKeyFile: /etc/kubeedge/certs/rootCA.key
+        tlsCertFile: /etc/kubeedge/certs/edge.crt
+        tlsPrivateKeyFile: /etc/kubeedge/certs/edge.key
         unixsocket:
           address: unix:///var/lib/kubeedge/kubeedge.sock
           enable: true
@@ -36,13 +53,76 @@ data:
           address: 0.0.0.0
           enable: true
           port: 10000
+        writeTimeout: 30
       cloudStream:
-         enable: false
-         streamPort: 10003
-         tlsStreamCAFile: /etc/kubeedge/ca/streamCA.crt
-         tlsStreamCertFile: /etc/kubeedge/certs/stream.crt
-         tlsStreamPrivateKeyFile: /etc/kubeedge/certs/stream.key
-         tlsTunnelCAFile: /etc/kubeedge/ca/rootCA.crt
-         tlsTunnelCertFile: /etc/kubeedge/certs/server.crt
-         tlsTunnelPrivateKeyFile: /etc/kubeedge/certs/server.key
-         tunnelPort: 10004
+        enable: true
+        streamPort: 10003
+        tlsStreamCAFile: /etc/kubeedge/certs/rootCA.crt
+        tlsStreamCertFile: /etc/kubeedge/certs/edge.crt
+        tlsStreamPrivateKeyFile: /etc/kubeedge/certs/edge.key
+        tlsTunnelCAFile: /etc/kubeedge/certs/rootCA.crt
+        tlsTunnelCertFile: /etc/kubeedge/certs/edge.crt
+        tlsTunnelPrivateKeyFile: /etc/kubeedge/certs/edge.key
+        tunnelPort: 10004
+      deviceController:
+        buffer:
+          deviceEvent: 1
+          deviceModelEvent: 1
+          updateDeviceStatus: 1024
+        context:
+          receiveModule: devicecontroller
+          responseModule: cloudhub
+          sendModule: cloudhub
+        enable: true
+        load:
+          updateDeviceStatusWorkers: 1
+      dynamicController:
+        enable: true
+      edgeController:
+        buffer:
+          configMapEvent: 1
+          deletePod: 1024
+          endpointsEvent: 1
+          podEvent: 1
+          queryConfigMap: 1024
+          queryEndpoints: 1024
+          queryNode: 1024
+          queryPersistentVolume: 1024
+          queryPersistentVolumeClaim: 1024
+          querySecret: 1024
+          queryService: 1024
+          queryVolumeAttachment: 1024
+          ruleEndpointsEvent: 1
+          rulesEvent: 1
+          secretEvent: 1
+          serviceEvent: 1
+          updateNode: 1024
+          updateNodeStatus: 1024
+          updatePodStatus: 1024
+        context:
+          receiveModule: edgecontroller
+          responseModule: cloudhub
+          sendModule: cloudhub
+          sendRouterModule: router
+        enable: true
+        load:
+          deletePodWorkers: 4
+          queryConfigMapWorkers: 4
+          queryEndpointsWorkers: 4
+          queryNodeWorkers: 4
+          queryPersistentVolumeClaimWorkers: 4
+          queryPersistentVolumeWorkers: 4
+          querySecretWorkers: 4
+          queryServiceWorkers: 4
+          queryVolumeAttachmentWorkers: 4
+          updateNodeStatusWorkers: 1
+          updateNodeWorkers: 4
+          updatePodStatusWorkers: 1
+        nodeUpdateFrequency: 10
+      router:
+        enable: true
+        address: 0.0.0.0
+        port: 9443
+        restTimeout: 60
+      syncController:
+        enable: true

@@ -41,7 +41,7 @@ spec:
         - name: conf
           mountPath: /etc/kubeedge/config
         - name: certs
-          mountPath: /etc/kubeedge
+          mountPath: /etc/kubeedge/certs
         - name: sock
           mountPath: /var/lib/kubeedge
       restartPolicy: Always
@@ -51,10 +51,13 @@ spec:
       - name: conf
         configMap:
           name: cloudcore
-      - name: certs
-        hostPath:
-          path: /etc/kubeedge
-          type: DirectoryOrCreate
+      - name: certs 
+        secret:
+          secretName: cloudcore
+#      - name: certs
+#        hostPath:
+#          path: /etc/kubeedge
+#          type: DirectoryOrCreate
       - name: sock
         hostPath:
           path: /var/lib/kubeedge
